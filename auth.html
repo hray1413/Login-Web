@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Auth System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f3f4f6;
+      position: relative;
+    }
+    .top-right {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+    h2 {
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .error {
+      color: red;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-right">
+    <a href="index.html">Back to Home</a>
+  </div>
+  <div class="container" id="auth-container">
+    <h2>Login</h2>
+    <div id="form-container">
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" placeholder="Enter your email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Enter your password">
+      </div>
+      <button onclick="handleLogin()">Login</button>
+      <p class="error" id="error-msg"></p>
+      <p>Don't have an account? <a href="#" onclick="showRegisterForm()">Register here</a></p>
+    </div>
+  </div>
+
+  <script>
+    const USERS_KEY = 'users';
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      errorMsg.textContent = '';
+
+      if (!email || !password) {
+        errorMsg.textContent = 'Please fill in all fields.';
+        return;
+      }
+
+      const users = getUsers();
+      const user = users.find(u => u.email === email && u.password === password);
+
+      if (user) {
+        alert('Login successful!');
+      } else {
+        errorMsg.textContent = 'Invalid email or password.';
+      }
+    }
+
+    function handleRegister() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      errorMsg.textContent = '';
+
+      if (!email || !password) {
+        errorMsg.textContent = 'Please fill in all fields.';
+        return;
+      }
+
+      const users = getUsers();
+      if (users.some(u => u.email === email)) {
+        errorMsg.textContent = 'User already exists.';
+        return;
+      }
+
+      users.push({ email, password });
+      saveUsers(users);
+      alert('Registration successful! You can now log in.');
+      showLoginForm();
+    }
+
+    function showRegisterForm() {
+      document.getElementById('auth-container').innerHTML = `
+        <h2>Register</h2>
+        <div id="form-container">
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter your email">
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter your password">
+          </div>
+          <button onclick="handleRegister()">Register</button>
+          <p class="error" id="error-msg"></p>
+          <p>Already have an account? <a href="#" onclick="showLoginForm()">Login here</a></p>
+        </div>
+      `;
+    }
+
+    function showLoginForm() {
+      document.getElementById('auth-container').innerHTML = `
+        <h2>Login</h2>
+        <div id="form-container">
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter your email">
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter your password">
+          </div>
+          <button onclick="handleLogin()">Login</button>
+          <p class="error" id="error-msg"></p>
+          <p>Don't have an account? <a href="#" onclick="showRegisterForm()">Register here</a></p>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
